@@ -31,6 +31,11 @@ double greedySplit(vector<double> & input, vector<double> & out1, vector<double>
 		return area2/area1;
 	}
 
+	if (area1 == 0.0 || area2 == 0.0)
+	{
+		return -1;
+	}
+
 	return area1/area2;
 }
 
