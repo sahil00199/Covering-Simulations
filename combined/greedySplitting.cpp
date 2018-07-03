@@ -39,20 +39,3 @@ double greedySplit(vector<double> & input, vector<double> & out1, vector<double>
 
 	return area1/area2;
 }
-
-int main()
-{
-	vector<double> input;
-	int numIter = 3;
-	for (int i = 0 ; i < numIter ; i ++)
-	{
-		input.push_back(numIter - i);
-	}
-	vector<double> a, b;
-	double ratio = greedySplit(input, a, b);
-	cout<<ratio<<endl;
-
-
-
-	return 0;
-}
