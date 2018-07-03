@@ -94,14 +94,14 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 	// basecases
 	double x = upleft.y - lowleft.y,y=lowright.x-lowleft.x;
 	if(radii.size() == 1){
-		cout<<"Base case 1 "<<x<<" "<<y<<" "<<radii[0]<<endl;
+		//cout<<"Base case 1 "<<x<<" "<<y<<" "<<radii[0]<<endl;
 		double g_0 = 0.5*sqrt(x*x+y*y);
 		if(radii[0] < g_0) {
 			ans.pb(mp(radii[0],Point(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y))));
 			return false;
 		}
 		else {// #2.1
-			cout<<"2.1 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+		//	cout<<"2.1 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 			ans.pb(mp(radii[0],Point(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y))));
 			return true;
 		}
@@ -110,34 +110,45 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 	double r_1 = radii[0],r_2=radii[1];
 	
 	if(radii.size() == 2){
-		cout<<"Base case 1 "<<x<<" "<<y<<" "<<r_1<<" "<<r_2<<endl;
-		double small = min(upleft.y - lowleft.y,lowright.x-lowleft.x),large = max(upleft.y - lowleft.y,lowright.x-lowleft.x);
+	//	cout<<"Base case 1 "<<x<<" "<<y<<" "<<r_1<<" "<<r_2<<endl;
+		double small = min(x,y),large = max(x,y);
 		double g_0 = 0.5*sqrt(x*x+y*y);
 		if(r_1 >= g_0) {//#3.1
-			cout<<"3.1 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<" "<<upleft.y<<" "<<lowleft.y<<endl;
+	//		cout<<"3.1 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<" "<<upleft.y<<" "<<lowleft.y<<endl;
 			ans.pb(mp(radii[0],Point(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y))));
 			return true;
 		} 
 		else if(r_2 < 0.5){//#3.2
-			cout<<"3.2 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
-			ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*small*small),0.5*(upleft.y+lowleft.y))));
+	//		cout<<"3.2 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+			if(x <= y) ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*small*small),0.5*(upleft.y+lowleft.y))));
+			else ans.pb(mp(radii[0],Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*small*small))));
 			return false;
 		}
 
-		if (2.0*sqrt(r_1*r_1 - 0.25*(small*small))+2.0*sqrt(r_2*r_2 - 0.25*(small*small)) < large) return false;
+		if (2.0*sqrt(r_1*r_1 - 0.25*(small*small))+2.0*sqrt(r_2*r_2 - 0.25*(small*small)) < large) {
+			if(x <= y){
+				ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*small*small),0.5*(upleft.y+lowleft.y))));
+				ans.pb(mp(radii[1],Point(lowright.x-sqrt(r_2*r_2-0.25*small*small),0.5*(upleft.y+lowleft.y))));
+			}
+			else {
+				ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-small*small*0.25))));
+				ans.pb(mp(r_2,Point(0.5*(lowleft.x+lowright.x),upleft.y-sqrt(r_1*r_1-small*small*0.25))));
+			}
+			return false;
+		}
 		else{// there are two cases depending on the orientation
 			if(x <= y){//#3.3
-				cout<<"3.3 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
-				cout<<"3.3 Placing circle of r="<<radii[1]<<" at x= "<<lowright.x-sqrt(r_2*r_2-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+	//			cout<<"3.3 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+	//			cout<<"3.3 Placing circle of r="<<radii[1]<<" at x= "<<lowright.x-sqrt(r_2*r_2-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 				ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*small*small),0.5*(upleft.y+lowleft.y))));
 				ans.pb(mp(radii[1],Point(lowright.x-sqrt(r_2*r_2-0.25*small*small),0.5*(upleft.y+lowleft.y))));
 				return true;
 			}
 			else{//#3.4
-				cout<<"3.4 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowleft.x+lowright.x)<<" y= "<<lowleft.y+2.0*sqrt(r_1*r_1-small*small*0.25)<<endl;
-				cout<<"3.4 Placing circle of r="<<radii[1]<<" at x= "<<0.5*(lowleft.x+lowright.x)<<" y= "<<upleft.y-2.0*sqrt(r_1*r_1-small*small*0.25)<<endl;
-				ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+2.0*sqrt(r_1*r_1-small*small*0.25))));
-				ans.pb(mp(r_2,Point(0.5*(lowleft.x+lowright.x),upleft.y-2.0*sqrt(r_1*r_1-small*small*0.25))));
+			//	cout<<"3.4 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowleft.x+lowright.x)<<" y= "<<lowleft.y+2.0*sqrt(r_1*r_1-small*small*0.25)<<endl;
+			//	cout<<"3.4 Placing circle of r="<<radii[1]<<" at x= "<<0.5*(lowleft.x+lowright.x)<<" y= "<<upleft.y-2.0*sqrt(r_1*r_1-small*small*0.25)<<endl;
+				ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y-sqrt(r_1*r_1-small*small*0.25))));
+				ans.pb(mp(r_2,Point(0.5*(lowleft.x+lowright.x),upleft.y-sqrt(r_1*r_1-small*small*0.25))));
 				return true;
 			}
 		}
@@ -150,16 +161,16 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 		double g_0 = 0.5*sqrt(x*x+y*y), g_1 = 0.5*(sqrt(x*x+(y-(1.0/6.0*x))*(y-(1.0/6.0*x)))), g_2 =  sqrt((484.0-11.0*(sqrt(1360)))/288.0);
 		if(r_1 >= g_0) {//#4.1
 			Point center(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y));
-			cout<<"4.1 Placing circle of r="<<r_1<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+		//	cout<<"4.1 Placing circle of r="<<r_1<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 			ans.pb(mp(r_1,center));
 			return true;
 		}
 		else if(r_1 >= g_1){//#4.2
-			cout<<"4.2 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+		//	cout<<"4.2 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 			ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
 			double l_0 = 0.5*x*sqrt(1.0+1.0/36.0),l_1 = 0.5*x*sqrt(0.25+1.0/36.0),l_2 = 0.5*x*sqrt(1.0/16.0+1.0/36.0);
 			if(r_2 >= l_0){//#4.2.1
-				cout<<"4.2.1 Placing circle of r="<<r_2<<" at x= "<<lowleft.x+(y-x/12.0)<<" y= "<<x/2<<endl;
+		//		cout<<"4.2.1 Placing circle of r="<<r_2<<" at x= "<<lowleft.x+(y-x/12.0)<<" y= "<<x/2<<endl;
 				ans.pb(mp(r_2,Point(lowleft.x+(y-x/12.0),x/2)));
 				return true;
 			}
@@ -172,10 +183,10 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 					double epsilon = 0.5*sqrt(10)-r_1;
 					double z = 2.0*y*y*(8*epsilon*sqrt(1.0+y*y));
 					z/=scale;x/=scale;y/=scale;r_1/=scale;
-					cout<<"4.3 Placing circle of r="<<r_1<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+		//			cout<<"4.3 Placing circle of r="<<r_1<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 					ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
 					double len = y-2.0*sqrt(r_1*r_1-0.25*x*x);
-					cout<<"4.3 Placing circle of r="<<r_1<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+		//			cout<<"4.3 Placing circle of r="<<r_1<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 					ans.pb(mp(r_2,Point(lowright.x - len/2.0,upright.y-sqrt(r_2*r_2-0.25*(len*len)))));
 					radii.erase(radii.begin());radii.erase(radii.begin());
 					return good_rectangle_cover(radii,Point(lowright.x-z/3.0,lowright.y),Point(lowright.x-z/3.0,lowright.y+z),Point(lowright.x,lowright.y+z),lowright,ans);	
