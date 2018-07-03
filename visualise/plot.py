@@ -19,7 +19,9 @@ for element in data:
 	ax.add_artist(circle)
 
 
-plt.xlim((-1, 2))
-plt.ylim((-1, 2))
+plt.xlim((-0.5, 3.5))
+plt.ylim((-0.5, 3.5))
+
+plt.grid(True)
 
 plt.show()
