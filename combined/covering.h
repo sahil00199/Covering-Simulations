@@ -18,3 +18,5 @@ bool coverEqTriangles(vector<double> & diskList, vector<pair<double, Point> > & 
 
 double greedySplit(vector<double> & input, vector<double> & out1, vector<double> & out2);
 
+bool checkRectangle(vector<pair<double, Point> > & solution, Point bl, Point tl, Point tr, Point br, int numIter = 1000)
+
