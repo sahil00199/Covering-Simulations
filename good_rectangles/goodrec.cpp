@@ -158,7 +158,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 	
 	if(x <= y){ // horizontal side is longer 
 		// case wise
-		double g_0 = 0.5*sqrt(x*x+y*y), g_1 = 0.5*(sqrt(x*x+(y-(1.0/6.0*x))*(y-(1.0/6.0*x)))), g_2 =  sqrt((484.0-11.0*(sqrt(1360)))/288.0);
+		double g_0 = 0.5*sqrt(x*x+y*y), g_1 = 0.5*(sqrt(x*x+(y-(x/6.0))*(y-(x/6.0)))), g_2 =  x*sqrt((484.0-11.0*(sqrt(1360)))/288.0);
 		if(r_1 >= g_0) {//#4.1
 			Point center(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y));
 		//	cout<<"4.1 Placing circle of r="<<r_1<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
@@ -167,24 +167,24 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 		}
 		else if(r_1 >= g_1){//#4.2
 		//	cout<<"4.2 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
-			ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
+			ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
 			double l_0 = 0.5*x*sqrt(1.0+1.0/36.0),l_1 = 0.5*x*sqrt(0.25+1.0/36.0),l_2 = 0.5*x*sqrt(1.0/16.0+1.0/36.0);
 			if(r_2 >= l_0){//#4.2.1
 		//		cout<<"4.2.1 Placing circle of r="<<r_2<<" at x= "<<lowleft.x+(y-x/12.0)<<" y= "<<x/2<<endl;
-				ans.pb(mp(r_2,Point(lowleft.x+(y-x/12.0),x/2)));
+				ans.pb(mp(r_2,Point(lowleft.x+(y-x/12.0),lowright.y+x/2)));
 				return true;
 			}
 			else if(r_2 >= l_1){//#4.3
-				// first deal with the boundar case
+				// first deal with the boundary case
 				if( y/x >= 2.999938 && (r_1 >= 1.5805*x &&  r_2 >= 0.49804*x)){//#4.3.1
-					// scale everythig up and fnd epsilon to calculate z and then scale evryhing down 
+					// scale everythig up and find epsilon to calculate z and then scale evryhing down 
 					double scale = (1.0/x);
 					r_1*=scale;r_2*=scale;x*=scale;y*=scale;
 					double epsilon = 0.5*sqrt(10)-r_1;
-					double z = 2.0*y*y*(8*epsilon*sqrt(1.0+y*y));
+					double z = (8*epsilon*sqrt(1.0+y*y));
 					z/=scale;x/=scale;y/=scale;r_1/=scale;
 		//			cout<<"4.3 Placing circle of r="<<r_1<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
-					ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
+		//			ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
 					double len = y-2.0*sqrt(r_1*r_1-0.25*x*x);
 		//			cout<<"4.3 Placing circle of r="<<r_1<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 					ans.pb(mp(r_2,Point(lowright.x - len/2.0,upright.y-sqrt(r_2*r_2-0.25*(len*len)))));
@@ -192,12 +192,14 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 					return good_rectangle_cover(radii,Point(lowright.x-z/3.0,lowright.y),Point(lowright.x-z/3.0,lowright.y+z),Point(lowright.x,lowright.y+z),lowright,ans);	
 				}
 				else{ //#4.3.2
-					ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
+		//			ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
 					double len = y-2.0*sqrt(r_1*r_1-0.25*x*x);
 					double len1 = x - 2.0*sqrt(r_2*r_2-0.25*len*len);
-					ans.pb(mp(r_2,Point(lowright.x - y/12.0,upright.y-sqrt(r_2*r_2-0.25*(len*len)))));
+					ans.pb(mp(r_2,Point(lowright.x - len/2.0,upright.y-sqrt(r_2*r_2-0.25*(len*len)))));
 					radii.erase(radii.begin());radii.erase(radii.begin());
-					return good_rectangle_cover(radii,Point(lowright.x-len,lowright.y),Point(lowright.x-len,lowright.y+len1),Point(lowright.x,lowright.y+len1),lowright,ans);
+					if(len/len1 <= 3 && len1/len <=3 ) return good_rectangle_cover(radii,Point(lowright.x-len,lowright.y),Point(lowright.x-len,lowright.y+len1),Point(lowright.x,lowright.y+len1),lowright,ans);
+					else if(len1 >= len) return good_rectangle_cover(radii,Point(lowright.x-len1/3.0,lowright.y),Point(lowright.x-len1/3.0,lowright.y+len1),Point(lowright.x,lowright.y+len1),lowright,ans);
+					else return good_rectangle_cover(radii,Point(lowright.x-len,lowright.y),Point(lowright.x-len,lowright.y+len/3.0),Point(lowright.x,lowright.y+len/3.0),lowright,ans);
 				}
 			}
 			else if(r_2 >= l_2){//#4.4
@@ -208,8 +210,8 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 				vector<pair<double,Point> > ans1,ans2;
 				double ratio = greedySplit(radii,a1,a2);
 				if(ratio > 2) cerr<<"ratio shouldnnt be bad than 2"<<endl;
-			    bool f1 = good_rectangle_cover(a1,Point(lowright.x-x/6.0,lowleft.y + 0.75*x - (ratio*0.75/(ratio+1))),Point(lowright.x-x/6.0,lowleft.y + 0.75*x),Point(lowright.x,lowleft.y+0.75*x),Point(lowright.x,lowleft.y + 0.75*x - (ratio*0.75/(ratio+1))),ans1);
-				bool f2 = good_rectangle_cover(a2,Point(lowright.x-x/6.0,lowleft.y),Point(lowright.x-x/6.0,lowleft.y+(0.75/(ratio+1))),Point(lowright.x,lowleft.y+(0.75/(ratio+1))),Point(lowright.x,lowleft.y),ans2);
+			    bool f1 = good_rectangle_cover(a1,Point(lowright.x-x/6.0,lowright.y + 0.75*x - (ratio*0.75*x/(ratio+1.0))),Point(lowright.x-x/6.0,lowright.y + 0.75*x),Point(lowright.x,lowleft.y+0.75*x),Point(lowright.x,lowright.y + 0.75*x - (ratio*0.75*x/(ratio+1.0))),ans1);
+				bool f2 = good_rectangle_cover(a2,Point(lowright.x-x/6.0,lowright.y),Point(lowright.x-x/6.0,lowright.y+(0.75*x/(ratio+1.0))),Point(lowright.x,lowright.y+(0.75*x/(ratio+1.0))),lowright,ans2);
 				for(auto itr : ans1 ) ans.pb(itr);
 				for(auto itr : ans2 ) ans.pb(itr);
 				return f1 & f2;	
@@ -217,9 +219,10 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			else {//#4.5
 				vector<double> a1,a2;
 				vector<pair<double,Point> > ans1,ans2;
+				radii.erase(radii.begin());
 				double ratio = greedySplit(radii,a1,a2);
-				bool f1 = good_rectangle_cover(a1,Point(lowleft.x+y-x/6.0,lowleft.y),Point(lowright.x-x/6.0,lowleft.y+x/2.0),Point(lowright.x,lowright.y+x/2.0),lowright,ans1);
-				bool f2 = good_rectangle_cover(a2,Point(lowright.x-x/6.0,lowleft.y+x/2.0),Point(lowright.x-x/6.0,upleft.y),upright,Point(lowright.x,lowright.y+x/2.0),ans2);
+				bool f1 = good_rectangle_cover(a1,Point(lowright.x-x/6.0,lowright.y),Point(lowright.x-x/6.0,lowright.y+x/2.0),Point(lowright.x,lowright.y+x/2.0),lowright,ans1);
+				bool f2 = good_rectangle_cover(a2,Point(lowright.x-x/6.0,lowright.y+x/2.0),Point(lowright.x-x/6.0,upright.y),upright,Point(lowright.x,lowright.y+x/2.0),ans2);
 				for(auto itr : ans1 ) ans.pb(itr);
 				for(auto itr : ans2 ) ans.pb(itr);
 				return f1 & f2;
@@ -228,13 +231,13 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 		else if(r_1 >= g_2){
 			ans.pb(mp(r_1,Point(lowleft.x + sqrt(r_1*r_1-0.25*x*x),0.5*(lowleft.y+upleft.y))));
 			radii.erase(radii.begin());
-			// two cases depending on whether the recatangle is good.
+			// two cases depending on whether the recatngle is good.
 			double rem = y-2*sqrt(r_1*r_1 - 0.25*x*x);
 			if(rem >= x/3.0){
-				return good_rectangle_cover(radii,Point(lowright.x-rem,lowleft.y),Point(upright.x-rem,upright.y),Point(upright.x,upright.y),Point(lowright.x,lowright.y),ans);
+				return good_rectangle_cover(radii,Point(lowright.x-rem,lowright.y),Point(upright.x-rem,upright.y),upright,lowright,ans);
 			}
 			else {
-				return good_rectangle_cover(radii,Point(lowright.x - x/3.0,lowright.y),Point(lowright.x-x/3.0,upright.y),Point(upright.x,upright.y),Point(lowright.x,lowright.y),ans);
+				return good_rectangle_cover(radii,Point(lowright.x - x/3.0,lowright.y),Point(lowright.x-x/3.0,upright.y),upright,lowright,ans);
 			}
 		}
 		else{
@@ -242,15 +245,15 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			vector<pair<double,Point> > ans1,ans2;
 			double ratio = greedySplit(radii,a1,a2);
 			if(ratio >= 3) cerr<<"Ratio shouldnt be bad than 3"<<endl;
-			bool f1 = good_rectangle_cover(a2,Point(lowleft.x,lowleft.y),Point(upleft.x,upleft.y),Point(upleft.x+(y)/(ratio+1.0),upleft.y),Point(lowleft.x+(y)/(ratio+1.0),lowleft.y),ans1);
-			bool f2 = good_rectangle_cover(a1,Point(lowleft.x+(y)/(ratio+1.0),lowleft.y),Point(upleft.x+(y)/(ratio+1.0),upleft.y),Point(upright.x,upright.y),Point(lowright.x,lowright.y),ans2);
+			bool f1 = good_rectangle_cover(a2,lowleft,upleft,Point(upleft.x+(y)/(ratio+1.0),upleft.y),Point(lowleft.x+(y)/(ratio+1.0),lowleft.y),ans1);
+			bool f2 = good_rectangle_cover(a1,Point(lowleft.x+(y)/(ratio+1.0),lowleft.y),Point(upleft.x+(y)/(ratio+1.0),upleft.y),upright,lowright,ans2);
 			for(auto itr : ans1 ) ans.pb(itr);
 			for(auto itr : ans2 ) ans.pb(itr);
 			return f1 & f2;
 		}
 	}
 	else{ // vertical side is longer 
-		double g_0 = 0.5*sqrt(x*x+y*y), g_1 = 0.5*(sqrt(y*y+(x-(1.0/6.0*y))*(x-(1.0/6.0*y)))), g_2 =  sqrt((484.0-11.0*(sqrt(1360)))/288.0);
+		double g_0 = 0.5*sqrt(x*x+y*y), g_1 = 0.5*(sqrt(y*y+(x-(y/6.0))*(x-(y/6.0)))), g_2 =  y*sqrt((484.0-11.0*(sqrt(1360)))/288.0);
 		if(r_1 >= g_0) {
 			ans.pb(mp(r_1,Point(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y))));
 			return true;
@@ -259,7 +262,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
 			double l_0 = 0.5*y*sqrt(1.0+1.0/36.0),l_1 = 0.5*y*sqrt(0.25+1.0/36.0),l_2 = 0.5*y*sqrt(1.0/16.0+1.0/36.0);
 			if(r_2 >= l_0) {
-				ans.pb(mp(r_2,Point(0.5*(lowleft.x+lowright.x),upleft.y-x/12.0)));
+				ans.pb(mp(r_2,Point(0.5*(lowleft.x+lowright.x),upleft.y-y/12.0))); 
 				return true;
 			} 
 			else if(r_2 >= l_1){
@@ -270,31 +273,34 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 					double epsilon = 0.5*sqrt(10)-r_1;
 					double z = 2.0*x*x*(8*epsilon*sqrt(1.0+x*x));
 					z/=scale;x/=scale;y/=scale;r_1/=scale;
-					ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
+					//ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
 					double len = x-2.0*sqrt(r_1*r_1-0.25*y*y);
-					ans.pb(mp(r_2,Point(lowleft.x+sqrt(r_2*r_2-0.25*len*len),upleft.y-0.5*len)));
-					radii.erase(radii.begin());radii.erase(radii.begin());
+					ans.pb(mp(r_2,Point(upleft.x+sqrt(r_2*r_2-0.25*len*len),upleft.y-0.5*len)));
+					radii.erase(radii.begin());
+					radii.erase(radii.begin());
 					return good_rectangle_cover(radii,Point(upright.x-z,upright.y-z/3.0),Point(upright.x-z,upright.y),upright,Point(upright.x,upright.y-z/3.0),ans);	
 				}
 				else{
-					ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
+				//	ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
 					double len = x-2.0*sqrt(r_1*r_1-0.25*y*y);
 					double len1 = y - 2.0*sqrt(r_2*r_2-0.25*len*len);
 					ans.pb(mp(r_2,Point(lowleft.x+sqrt(r_2*r_2-0.25*len*len),upleft.y-0.5*len)));
 					radii.erase(radii.begin());radii.erase(radii.begin());
-					return good_rectangle_cover(radii,Point(upright.x-len1,upright.y-len),Point(upright.x-len1,upright.y),upright,Point(upright.x,upright.y-len),ans);
+					if(len/len1 <= 3.0 && len1/len <=3.0) return good_rectangle_cover(radii,Point(upright.x-len1,upright.y-len),Point(upright.x-len1,upright.y),upright,Point(upright.x,upright.y-len),ans);
+					else if(len1 > len) return good_rectangle_cover(radii,Point(upright.x-len1,upright.y-len1/3.0),Point(upright.x-len1,upright.y),upright,Point(upright.x,upright.y-len1/3.0),ans);
+					else return good_rectangle_cover(radii,Point(upright.x-len/3.0,upright.y-len),Point(upright.x-len/3.0,upright.y),upright,Point(upright.x,upright.y-len),ans);
 				}
 			}
 			else if(r_2 >= l_2){
-				ans.pb(mp(r_2,Point(lowleft.x+y/8.0,upleft.y-y/12.0)));
+				ans.pb(mp(r_2,Point(upleft.x+y/8.0,upleft.y-y/12.0)));
 				radii.erase(radii.begin());
 				radii.erase(radii.begin());
 				vector<double> a1,a2;
 				vector<pair<double,Point> > ans1,ans2;
 				double ratio = greedySplit(radii,a1,a2);
 				if(ratio >= 2) cerr<<"Ratio shouldnt be bad than 2"<<endl;
-				bool f1 = good_rectangle_cover(a1,Point(lowleft.x+y*0.25,upleft.y-y/6.0),Point(upleft.x+y*0.25,upleft.y),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y-y/6.0),ans1);
-				bool f2 = good_rectangle_cover(a1,Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y-y/6.0),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y),Point(upright.x,upright.y),Point(upright.x,upright.y-y/6.0),ans1);
+				bool f1 = good_rectangle_cover(a1,Point(upleft.x+y*0.25,upleft.y-y/6.0),Point(upleft.x+y*0.25,upleft.y),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y-y/6.0),ans1);
+				bool f2 = good_rectangle_cover(a1,Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y-y/6.0),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y),upright,Point(upright.x,upright.y-y/6.0),ans2);
 				for(auto itr : ans1 ) ans.pb(itr);
 				for(auto itr : ans2 ) ans.pb(itr);
 				return f1 & f2;
@@ -302,9 +308,10 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			else {
 				vector<double> a1,a2;
 				vector<pair<double,Point> > ans1,ans2;
+				radii.erase(radii.begin());
 				double ratio = greedySplit(radii,a1,a2);
-				bool f1 = good_rectangle_cover(a1,Point(lowleft.x,upleft.y-y/6.0),Point(upleft.x,upleft.y),Point(upleft.x+y/2.0,upleft.y),Point(upleft.x+y/2.0,upleft.y-y/6.0),ans1);
-				bool f2 = good_rectangle_cover(a2,Point(upleft.x+y/2.0,upleft.y-y/6.0),Point(upleft.x+y/2.0,upleft.y),Point(upright.x,upright.y),Point(upright.x,upright.y-y/6.0),ans2);
+				bool f1 = good_rectangle_cover(a1,Point(upleft.x,upleft.y-y/6.0),upleft,Point(upleft.x+y/2.0,upleft.y),Point(upleft.x+y/2.0,upleft.y-y/6.0),ans1);
+				bool f2 = good_rectangle_cover(a2,Point(upleft.x+y/2.0,upleft.y-y/6.0),Point(upleft.x+y/2.0,upleft.y),upright,Point(upright.x,upright.y-y/6.0),ans2);
 				for(auto itr : ans1 ) ans.pb(itr);
 				for(auto itr : ans2 ) ans.pb(itr);
 				return f1 & f2;
@@ -313,13 +320,13 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 		else if(r_1 >= g_2){
 			ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
 			radii.erase(radii.begin());
-			// two cases depending on whether the recatangle is good.
-			double rem = y-2*sqrt(r_1*r_1 - 0.25*y*y);
+			// two cases depending on whether the rectangle is good.
+			double rem = y-2.0*sqrt(r_1*r_1 - 0.25*y*y);
 			if(rem >= y/3.0) {
-				return good_rectangle_cover(radii,Point(lowleft.x,lowleft.y+2*sqrt(r_1*r_1 - 0.25*y*y)),Point(upleft.x,upleft.y),Point(upright.x,upright.y),Point(upright.x,lowleft.y+2*sqrt(r_1*r_1 - 0.25*y*y)),ans);
+				return good_rectangle_cover(radii,Point(upleft.x,upleft.y-rem),upleft,upright,Point(upright.x,upright.y-rem),ans);
 			}
 			else {
-				return good_rectangle_cover(radii,Point(lowleft.x,upleft.y-y/3.0),Point(upleft.x,upleft.y),Point(upright.x,upright.y),Point(upright.x,upright.y-y/3.0),ans);
+				return good_rectangle_cover(radii,Point(upleft.x,upleft.y-y/3.0),upleft,upright,Point(upright.x,upright.y-y/3.0),ans);
 			}
 		}
 		else {
@@ -327,7 +334,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			vector<pair<double,Point> > ans1,ans2;
 			double ratio = greedySplit(radii,a1,a2);
 			if(ratio >= 3) cerr<<"Ratio shouldnt be bad than 3"<<endl;
-			bool f1 = good_rectangle_cover(a1,Point(lowleft.x,lowleft.y),Point(lowleft.x,lowleft.y+ratio*x*(1.0/(ratio+1))),Point(lowright.x,lowright.y+ratio*x*(1.0/(ratio+1))),Point(lowright.x,lowright.y),ans1);
+			bool f1 = good_rectangle_cover(a1,lowleft,Point(lowleft.x,lowleft.y+ratio*x*(1.0/(ratio+1))),Point(lowright.x,lowright.y+ratio*x*(1.0/(ratio+1))),lowright,ans1);
 			bool f2 = good_rectangle_cover(a2,Point(lowleft.x,lowleft.y+ratio*x*(1.0/(ratio+1))),upleft,upright,Point(lowright.x,lowright.y+ratio*x*(1.0/(ratio+1))),ans2);
 			for(auto itr : ans1 ) ans.pb(itr);
 			for(auto itr : ans2 ) ans.pb(itr);
