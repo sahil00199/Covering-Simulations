@@ -188,7 +188,7 @@ bool eq(vector<double> & diskList, vector<pair<double, Point> > & output, Point 
 
 		else
 		{
-			possible = bad_rectangle_cover(newDiskList, bl, tl, tr, br, answer);
+			possible = good_rectangle_cover(newDiskList, bl, tl, tr, br, answer);
 		}
 
 		if (!possible) return false;
