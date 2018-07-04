@@ -26,33 +26,50 @@ int main()
 
 
 */
-	double lam = 1.6;
+
+
+	double delta = 0.2;
 
 	default_random_engine generator;
-	uniform_real_distribution<double> distribution(0.0,sqrt(lam*lam + 1)/2.0);
+	uniform_real_distribution<double> distribution(0.0,sqrt(77.0)/6.0);
 
-	cout<<distribution(generator)<<endl;
+	for (double lam = 1.0 ; lam <= 10.0 ; lam += 0.005)
+	{
+		
+		vector<double> diskList;
 
-	vector<double> diskList(5);
-	diskList[0] = 0.5;
-	diskList[1] = 0.5;
-	diskList[2] = 0.5;
-	diskList[3] = 0.5;
-	diskList[4] = 0.5;
-	vector<pair<double, Point> > answer;
-	Point a(0,0), b(0,1), c(lam, 1), d(lam, 0);
-	bool possible = good_rectangle_cover(diskList, a, b, c, d, answer);
-	if (!possible)
-	{
-		cout<<"Not possible\n";
-	}
-	else
-	{
-		cout<<"Possible\n";
+		double areaYet = 0.0;
+		double r = distribution(generator);
+		while (areaYet + r*r < 11.0*lam/12.0)
+		{
+			areaYet += r*r;
+			diskList.push_back(r);
+			r = distribution(generator);
+		}
+		diskList.push_back(sqrt(11.0*lam/12.0 - areaYet + .0001));
+		sort(diskList.begin(), diskList.end());
+		reverse(diskList.begin(), diskList.end());
+
+		vector<pair<double, Point> > answer;
+		//Point a(0,0), b(0,lam), c(1, lam), d(1, 0);
+		Point a(0,0), b(0, 1), c(lam, 1), d(lam, 0);
+		bool possible = bad_rectangle_cover_bounded_radii(diskList, a, b, c, d, answer);
 		bool correct = checkRectangle(answer, a, b, c, d);
-		if (correct) cout<<"Correct!\n";
-		else cout<<"Incorrect\n";
+		if (!(possible && correct))
+		{
+			cout<<possible<<" "<<correct<<" ";
+			cout<<lam<<endl;
+			for (int i = 0 ; i < diskList.size() ; i ++)
+			{
+				cout<<diskList[i]<<" ";
+			}
+			cout<<endl;
+		}
+		cout<<lam<<endl;
 	}
+
 
 	return 0;
 }
+
+

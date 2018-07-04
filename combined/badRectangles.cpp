@@ -108,7 +108,7 @@ bool bad_rectangle_cover_bounded_radii(vector<double> & diskList, Point bl, Poin
 			double splitY = bl.y + (tl.y - bl.y)*(1.0/(1.0 + 1.0/ratio));
 
 			//recurse on the 2 good rectangles
-			Point midL(bl.x, splitY), midR(, splitY);
+			Point midL(bl.x, splitY), midR(br.x, splitY);
 			vector<pair<double, Point> > answer1, answer2;
 			bool possible = good_rectangle_cover(new1, bl, midL, midR, br, answer1);
 			possible = possible && good_rectangle_cover(new2, midL, tl, tr, midR, answer2);

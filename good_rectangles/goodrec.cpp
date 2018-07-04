@@ -217,7 +217,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			}
 		}
 		else if(r_1 >= g_2){ 
-			cout<<"8.8 place r= "<<r_1<<" x= "<<lowleft.x + sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(lowleft.y+upleft.y)<<endl;
+			//cout<<"8.8 place r= "<<r_1<<" x= "<<lowleft.x + sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(lowleft.y+upleft.y)<<endl;
 			ans.pb(mp(r_1,Point(lowleft.x + sqrt(r_1*r_1-0.25*x*x),0.5*(lowleft.y+upleft.y))));
 			radii.erase(radii.begin());
 			// two cases depending on whether the recatngle is good.
