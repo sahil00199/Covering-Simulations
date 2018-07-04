@@ -37,6 +37,7 @@ bool checkRectangle(vector<pair<double, Point> > & solution, Point bl, Point tl,
 
 bool checkEq(vector<pair<double, Point> > & solution, Point point0, double scale)
 {
+	int n = solution.size();
 	for (int i = 0 ; i <= numIter ; i ++)
 	{
 		double y = point0.y + double(i)*scale*sqrt(3.0)/(2.0*double(numIter));
@@ -58,4 +59,6 @@ bool checkEq(vector<pair<double, Point> > & solution, Point point0, double scale
 			}
 		}
 	}
+
+	return true;
 }
