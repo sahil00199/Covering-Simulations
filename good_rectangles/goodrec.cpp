@@ -55,6 +55,13 @@ struct Point{
 };
 
 
+bool deter(double r_1,double r_2,double x, double y){
+	if(x >= y) swap(x,y);
+	if(r_1 >= 0.5*sqrt(x*x+y*y)) return true;
+	if(r_2 < 0.5*x) return false;
+	if(2*sqrt(r_1*r_1-0.25*x*x)+2*sqrt(r_2*r_2-0.25*x*x) >= y) return true;
+	return false;
+}
 
 // return the coordinates of the disk,assume the disk is sorted 
 double greedySplit(vector<double> & input, vector<double> & out1, vector<double> & out2)
@@ -87,21 +94,19 @@ double greedySplit(vector<double> & input, vector<double> & out1, vector<double>
 	return area1/area2;
 }
 
-// mistake 1 :- find g_2 in terms of x
-
 bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Point upright,Point lowright,vector<pair<double,Point> > & ans){
+	double x = upleft.y - lowleft.y,y=lowright.x-lowleft.x;
+
 	if(radii.empty()) return false;
 	// basecases
-	double x = upleft.y - lowleft.y,y=lowright.x-lowleft.x;
+	
 	if(radii.size() == 1){
-		//cout<<"Base case 1 "<<x<<" "<<y<<" "<<radii[0]<<endl;
 		double g_0 = 0.5*sqrt(x*x+y*y);
 		if(radii[0] < g_0) {
 			ans.pb(mp(radii[0],Point(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y))));
 			return false;
 		}
-		else {// #2.1
-		//	cout<<"2.1 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+		else {
 			ans.pb(mp(radii[0],Point(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y))));
 			return true;
 		}
@@ -110,21 +115,14 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 	double r_1 = radii[0],r_2=radii[1];
 	
 	if(radii.size() == 2){
-	//	cout<<"Base case 1 "<<x<<" "<<y<<" "<<r_1<<" "<<r_2<<endl;
+		if(!deter(r_1,r_2,x,y)) return false;
 		double small = min(x,y),large = max(x,y);
 		double g_0 = 0.5*sqrt(x*x+y*y);
 		if(r_1 >= g_0) {//#3.1
-	//		cout<<"3.1 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<" "<<upleft.y<<" "<<lowleft.y<<endl;
 			ans.pb(mp(radii[0],Point(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y))));
 			return true;
 		} 
-		else if(r_2 < 0.5){//#3.2
-	//		cout<<"3.2 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
-			if(x <= y) ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*small*small),0.5*(upleft.y+lowleft.y))));
-			else ans.pb(mp(radii[0],Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*small*small))));
-			return false;
-		}
-
+		
 		if (2.0*sqrt(r_1*r_1 - 0.25*(small*small))+2.0*sqrt(r_2*r_2 - 0.25*(small*small)) < large) {
 			if(x <= y){
 				ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*small*small),0.5*(upleft.y+lowleft.y))));
@@ -136,17 +134,14 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			}
 			return false;
 		}
+
 		else{// there are two cases depending on the orientation
-			if(x <= y){//#3.3
-	//			cout<<"3.3 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
-	//			cout<<"3.3 Placing circle of r="<<radii[1]<<" at x= "<<lowright.x-sqrt(r_2*r_2-0.25*small*small)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+			if(x <= y){
 				ans.pb(mp(radii[0],Point(lowleft.x+sqrt(r_1*r_1-0.25*small*small),0.5*(upleft.y+lowleft.y))));
 				ans.pb(mp(radii[1],Point(lowright.x-sqrt(r_2*r_2-0.25*small*small),0.5*(upleft.y+lowleft.y))));
 				return true;
 			}
-			else{//#3.4
-			//	cout<<"3.4 Placing circle of r="<<radii[0]<<" at x= "<<0.5*(lowleft.x+lowright.x)<<" y= "<<lowleft.y+2.0*sqrt(r_1*r_1-small*small*0.25)<<endl;
-			//	cout<<"3.4 Placing circle of r="<<radii[1]<<" at x= "<<0.5*(lowleft.x+lowright.x)<<" y= "<<upleft.y-2.0*sqrt(r_1*r_1-small*small*0.25)<<endl;
+			else{
 				ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y-sqrt(r_1*r_1-small*small*0.25))));
 				ans.pb(mp(r_2,Point(0.5*(lowleft.x+lowright.x),upleft.y-sqrt(r_1*r_1-small*small*0.25))));
 				return true;
@@ -159,22 +154,19 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 	if(x <= y){ // horizontal side is longer 
 		// case wise
 		double g_0 = 0.5*sqrt(x*x+y*y), g_1 = 0.5*(sqrt(x*x+(y-(x/6.0))*(y-(x/6.0)))), g_2 =  x*sqrt((484.0-11.0*(sqrt(1360)))/288.0);
-		if(r_1 >= g_0) {//#4.1
+		if(r_1 >= g_0) {
 			Point center(0.5*(lowright.x+lowleft.x),0.5*(upleft.y+lowleft.y));
-		//	cout<<"4.1 Placing circle of r="<<r_1<<" at x= "<<0.5*(lowright.x+lowleft.x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 			ans.pb(mp(r_1,center));
 			return true;
 		}
-		else if(r_1 >= g_1){//#4.2
-		//	cout<<"4.2 Placing circle of r="<<radii[0]<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
+		else if(r_1 >= g_1){
 			ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
 			double l_0 = 0.5*x*sqrt(1.0+1.0/36.0),l_1 = 0.5*x*sqrt(0.25+1.0/36.0),l_2 = 0.5*x*sqrt(1.0/16.0+1.0/36.0);
-			if(r_2 >= l_0){//#4.2.1
-		//		cout<<"4.2.1 Placing circle of r="<<r_2<<" at x= "<<lowleft.x+(y-x/12.0)<<" y= "<<x/2<<endl;
+			if(r_2 >= l_0){
 				ans.pb(mp(r_2,Point(lowleft.x+(y-x/12.0),lowright.y+x/2)));
 				return true;
 			}
-			else if(r_2 >= l_1){//#4.3
+			else if(r_2 >= l_1){
 				// first deal with the boundary case
 				if( y/x >= 2.999938 && (r_1 >= 1.5805*x &&  r_2 >= 0.49804*x)){//#4.3.1
 					// scale everythig up and find epsilon to calculate z and then scale evryhing down 
@@ -183,16 +175,12 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 					double epsilon = 0.5*sqrt(10)-r_1;
 					double z = (8*epsilon*sqrt(1.0+y*y));
 					z/=scale;x/=scale;y/=scale;r_1/=scale;
-		//			cout<<"4.3 Placing circle of r="<<r_1<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
-		//			ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
 					double len = y-2.0*sqrt(r_1*r_1-0.25*x*x);
-		//			cout<<"4.3 Placing circle of r="<<r_1<<" at x= "<<lowleft.x+sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(upleft.y+lowleft.y)<<endl;
 					ans.pb(mp(r_2,Point(lowright.x - len/2.0,upright.y-sqrt(r_2*r_2-0.25*(len*len)))));
 					radii.erase(radii.begin());radii.erase(radii.begin());
 					return good_rectangle_cover(radii,Point(lowright.x-z/3.0,lowright.y),Point(lowright.x-z/3.0,lowright.y+z),Point(lowright.x,lowright.y+z),lowright,ans);	
 				}
-				else{ //#4.3.2
-		//			ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(upleft.y+lowleft.y))));
+				else{ 
 					double len = y-2.0*sqrt(r_1*r_1-0.25*x*x);
 					double len1 = x - 2.0*sqrt(r_2*r_2-0.25*len*len);
 					ans.pb(mp(r_2,Point(lowright.x - len/2.0,upright.y-sqrt(r_2*r_2-0.25*(len*len)))));
@@ -202,7 +190,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 					else return good_rectangle_cover(radii,Point(lowright.x-len,lowright.y),Point(lowright.x-len,lowright.y+len/3.0),Point(lowright.x,lowright.y+len/3.0),lowright,ans);
 				}
 			}
-			else if(r_2 >= l_2){//#4.4
+			else if(r_2 >= l_2){
 				ans.pb(mp(r_2,Point(lowleft.x+(y-x/12.0),upleft.y-x/8.0)));
 				radii.erase(radii.begin());
 				radii.erase(radii.begin());
@@ -216,7 +204,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 				for(auto itr : ans2 ) ans.pb(itr);
 				return f1 & f2;	
 			}
-			else {//#4.5
+			else {
 				vector<double> a1,a2;
 				vector<pair<double,Point> > ans1,ans2;
 				radii.erase(radii.begin());
@@ -228,7 +216,8 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 				return f1 & f2;
 			}
 		}
-		else if(r_1 >= g_2){
+		else if(r_1 >= g_2){ 
+			cout<<"8.8 place r= "<<r_1<<" x= "<<lowleft.x + sqrt(r_1*r_1-0.25*x*x)<<" y= "<<0.5*(lowleft.y+upleft.y)<<endl;
 			ans.pb(mp(r_1,Point(lowleft.x + sqrt(r_1*r_1-0.25*x*x),0.5*(lowleft.y+upleft.y))));
 			radii.erase(radii.begin());
 			// two cases depending on whether the recatngle is good.
@@ -273,7 +262,6 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 					double epsilon = 0.5*sqrt(10)-r_1;
 					double z = 2.0*x*x*(8*epsilon*sqrt(1.0+x*x));
 					z/=scale;x/=scale;y/=scale;r_1/=scale;
-					//ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
 					double len = x-2.0*sqrt(r_1*r_1-0.25*y*y);
 					ans.pb(mp(r_2,Point(upleft.x+sqrt(r_2*r_2-0.25*len*len),upleft.y-0.5*len)));
 					radii.erase(radii.begin());
@@ -281,7 +269,6 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 					return good_rectangle_cover(radii,Point(upright.x-z,upright.y-z/3.0),Point(upright.x-z,upright.y),upright,Point(upright.x,upright.y-z/3.0),ans);	
 				}
 				else{
-				//	ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
 					double len = x-2.0*sqrt(r_1*r_1-0.25*y*y);
 					double len1 = y - 2.0*sqrt(r_2*r_2-0.25*len*len);
 					ans.pb(mp(r_2,Point(lowleft.x+sqrt(r_2*r_2-0.25*len*len),upleft.y-0.5*len)));
@@ -321,7 +308,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
 			radii.erase(radii.begin());
 			// two cases depending on whether the rectangle is good.
-			double rem = y-2.0*sqrt(r_1*r_1 - 0.25*y*y);
+			double rem = x-2.0*sqrt(r_1*r_1 - 0.25*y*y);
 			if(rem >= y/3.0) {
 				return good_rectangle_cover(radii,Point(upleft.x,upleft.y-rem),upleft,upright,Point(upright.x,upright.y-rem),ans);
 			}
@@ -349,12 +336,20 @@ bool wrapper_rc(vector<double> & radii,vector<pair<double,Point> > & ans,double 
 	return good_rectangle_cover(radii,Point(0,0),Point(0,1),Point(lambda,1),Point(lambda,0),ans);
 }
 
+bool checker(double x,double y,pair<double,Point> itr){
+	double x1 = itr.se.x,y1=itr.se.y,r1=itr.fi;
+	if(((x-x1)*(x-x1) +(y-y1)*(y-y1)) <= r1*r1 + eps) return true;
+	else return false; 
+}
+
 int main(){
 	vector<double>  C;
 	vector<pair<double,Point> > ans;
-	cout<<"enter number of disks "<<endl;
+	
+	cout<<"Enter number of disks"<<endl;
 	int n;cin>>n;
-	cout<<"enter there radii"<<endl;
+	cout<<"enter  radius of disks "<<endl;
+	//cout<<"enter frequnthere radii"<<endl;
 	double area=0.0;
 
 	rep(i,0,n){
@@ -366,12 +361,32 @@ int main(){
 	
 	sort(C.begin(),C.end());
 	reverse(C.begin(),C.end());
-	cout<<wrapper_rc(C,ans,3.0)<<endl;
+	bool f = wrapper_rc(C,ans,3.0);
+	cout<<f<<endl;
 	ofstream myfile;
 	myfile.open("input");
+
 	for(auto itr : ans){
 		myfile<<itr.fi<<" ("<<itr.se.x<<","<<itr.se.y<<")"<<endl;
+		//cout<<itr.fi<<" "<<itr.se.x<<" "<<itr.se.y<<endl;
 	}
 	myfile.close();
+	if(f){
+		for(double x = 0.0 ; x <=3.0 ;x+=0.001){
+			for(double y = 0.0 ; y <=1.0 ;y+=0.0001){
+				bool f=0;
+				for(auto itr : ans){
+					if(checker(x,y,itr)) {f=1;break;}
+				}
+				if(!f) {cout<<"Found a point not covered (x,y)== "<<x<<" "<<y<<endl;
+				return 0;}	
+			}
+		}
+	}
+	// for(auto itr : ans){
+	// 	//myfile<<itr.fi<<" ("<<itr.se.x<<","<<itr.se.y<<")"<<endl;
+	// 	cout<<itr.fi<<" "<<itr.se.x<<" "<<itr.se.y<<endl;
+	// }
+	
 }
 
