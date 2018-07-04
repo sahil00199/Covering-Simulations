@@ -25,3 +25,4 @@ double greedySplit(vector<double> & input, vector<double> & out1, vector<double>
 
 bool checkRectangle(vector<pair<double, Point> > & solution, Point bl, Point tl, Point tr, Point br);
 
+//bool checkEq(vector<pait<double, Point> > & solution, Point point0, double scale);

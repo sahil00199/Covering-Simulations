@@ -1,5 +1,3 @@
-#include "covering.h"
-
 #define rep(i,a,b) for(int i=a;i<b;++i)
 #define repr(i,a,b) for(int i=a,i > b;--i)
 #define mm(lamb, tttt) memset(lamb, tttt, sizeof lamb)
@@ -51,17 +49,50 @@ typedef pair<int, pair<int,int> > iii;
 typedef vector<ii> vii;
 
 
+struct Point{
+	double x,y;
+	Point(double _x,double _y):x(_x),y(_y){}
+};
+
 
 bool deter(double r_1,double r_2,double x, double y){
 	if(x >= y) swap(x,y);
 	if(r_1 >= 0.5*sqrt(x*x+y*y)) return true;
-	if(r_2 < 0.5*x) return false;
-	if(2*sqrt(r_1*r_1-0.25*x*x)+2*sqrt(r_2*r_2-0.25*x*x) >= y) return true;
+	if(r_2 < 0.5*x+eps) return false;
+	if(2*sqrt(r_1*r_1-0.25*x*x)+2*sqrt(r_2*r_2-0.25*x*x) >= y+eps) return true;
 	return false;
 }
 
+// return the coordinates of the disk,assume the disk is sorted 
+double greedySplit(vector<double> & input, vector<double> & out1, vector<double> & out2)
+{
+	out1.resize(0);
+	out2.resize(0);
+	double area1 = 0.0, area2 = 0.0;
+	for (int i = 0 ; i < input.size() ; i ++)
+	{
+		if (area1 <= area2)
+		{
+			out1.push_back(input[i]);
+			area1 += input[i]*input[i];
+		}
+		else
+		{
+			out2.push_back(input[i]);
+			area2 += input[i]*input[i];
+		}
+	}
 
-// mistake 1 :- find g_2 in terms of x
+	if (area2 > area1)
+	{
+		vector<double> temp = out1;
+		out1 = out2;
+		out2 = temp;
+		return area2/area1;
+	}
+
+	return area1/area2;
+}
 
 bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Point upright,Point lowright,vector<pair<double,Point> > & ans){
 	double x = upleft.y - lowleft.y,y=lowright.x-lowleft.x;
@@ -314,5 +345,65 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 bool wrapper_rc(vector<double> & radii,vector<pair<double,Point> > & ans,double lambda){
 	//return good_rectangle_cover(radii,Point(0,0),Point(0,1),Point(lambda,1),Point(lambda,0),ans);
 	return good_rectangle_cover(radii,Point(0,0),Point(0,lambda),Point(1,lambda),Point(1,0),ans);
+}
+
+bool checker(double x,double y,pair<double,Point> itr){
+	double x1 = itr.se.x,y1=itr.se.y,r1=itr.fi;
+	if(((x-x1)*(x-x1) +(y-y1)*(y-y1)) <= r1*r1 + eps) return true;
+	else return false; 
+}
+
+int main(){
+	vector<double>  C;
+	vector<pair<double,Point> > ans;
+	
+	cout<<"Enter number of disks"<<endl;
+	int n;cin>>n;
+	cout<<"enter  radius of disks "<<endl;
+	//cout<<"enter frequnthere radii"<<endl;
+	double area=0.0;
+
+	rep(i,0,n){
+		double x;cin>>x;C.pb(x);area+=PI*(x*x);
+	}
+
+	cout<<area<<" M "<<(11.0/12.0)*PI*3.0<<endl;
+	if(area < (11.0/12.0)*PI*3.0) cout<<"WARNING"<<endl;
+	
+	sort(C.begin(),C.end());
+	reverse(C.begin(),C.end());
+	bool f = wrapper_rc(C,ans,2.03);
+	cout<<f<<endl;
+	ofstream myfile;
+	myfile.open("input");
+
+	for(auto itr : ans){
+		myfile<<itr.fi<<" ("<<itr.se.x<<","<<itr.se.y<<")"<<endl;
+		//cout<<itr.fi<<" "<<itr.se.x<<" "<<itr.se.y<<endl;
+	}
+	myfile.close();
+	if(f){
+		for(double x = 0.0 ; x <=1.0 ;x+=0.001){
+			for(double y = 0.0 ; y <=2.03 ;y+=0.0001){
+				bool f=0;
+				for(auto itr : ans){
+					if(checker(x,y,itr)) {f=1;break;}
+				}
+				if(!f) {cout<<"Found a point not covered (x,y)== "<<x<<" "<<y<<endl;
+				double mindist = 10;
+				for(auto itr : ans){
+					double x1 = itr.se.x,y1=itr.se.y,r1=itr.fi;
+					mindist = min(mindist,((x-x1)*(x-x1) +(y-y1)*(y-y1)) - r1*r1 );
+				}
+				cout<<mindist<<endl;
+				return 0;}	
+			}
+		}
+	}
+	// for(auto itr : ans){
+	// 	//myfile<<itr.fi<<" ("<<itr.se.x<<","<<itr.se.y<<")"<<endl;
+	// 	cout<<itr.fi<<" "<<itr.se.x<<" "<<itr.se.y<<endl;
+	// }
+	
 }
 
