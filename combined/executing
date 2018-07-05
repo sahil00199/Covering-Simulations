@@ -1,0 +1,3 @@
+ g++ -std=c++11 main.cpp badRectangles.cpp goodRectangles.cpp eq.cpp greedySplitting.cpp point.cpp checker.cpp right.cpp 
+ ./a.out
+ 

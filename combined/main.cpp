@@ -31,7 +31,7 @@ int main()
 	double delta = 0.2;
 
 	default_random_engine generator;
-	uniform_real_distribution<double> distribution(0.0,0.6);
+	uniform_real_distribution<double> distribution(0.0,1.0);
 
 	for (int ii = 0 ; ii < 5000 ; ii ++)
 	{
@@ -53,8 +53,8 @@ int main()
 		vector<pair<double, Point> > answer;
 		//Point a(0,0), b(0,lam), c(1, lam), d(1, 0);
 		Point a(0,0);
-		bool possible = eq(diskList, answer, a, 1.0);
-		bool correct = checkEq(answer, a, 1.0);
+		bool possible = right(diskList, answer, a, 1.0, 0);
+		bool correct = checkRight(answer, a, 1.0);
 		if (!(possible && correct))
 		{
 			cout<<possible<<" "<<correct<<"\n";

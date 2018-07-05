@@ -157,6 +157,87 @@ bool right(vector<double> & diskList, vector<pair<double, Point> > & output, Poi
 				}
 			}
 		}
+
+		//case 5&6
+		else
+		{
+			double r2 = diskList[1];
+			//case 5
+			if (r1 + r2 >= scale*5.0/(6.0*sqrt(2.0)))
+			{
+				//create the new disk list for the recursion
+				vector<double> newDiskList(diskList.size() - 2);
+				for (int i = 2; i < diskList.size() ; i ++)
+				{
+					newDiskList[i-2] = diskList[i];
+				}
+				vector<pair<double, Point> > answer;
+
+				//create the four points and recurse
+				Point p1(sqrt(2.0)*r1, 0.0), p2(sqrt(2.0)*r1, scale - sqrt(2.0)*r2),
+					p3(scale, scale - sqrt(2.0)*r2), p4(scale, 0.0);
+				bool possible = good_rectangle_cover(newDiskList, p1, p2, p3, p4, answer);
+
+				//place the first 2 disks and copy the output of the recursive calls
+				output.resize(0.0);
+				output.push_back(make_pair(r1, Point(r1/sqrt(2.0), r1/sqrt(2.0))));
+				output.push_back(make_pair(r2, Point((scale*sqrt(2.0) - r2)/sqrt(2.0), (scale*sqrt(2.0) - r2)/sqrt(2.0))));
+				for (int i = 0 ; i < answer.size() ; i ++)
+				{
+					output.push_back(answer[i]);
+				}
+			}
+
+			//case 6
+			else
+			{
+				//create a set of disks for the rectangle and add the rest to another one
+				vector<double> newDiskList;
+				int index = 1;
+				double areaYet = 0.0;
+				double targetArea = (11.0/12.0)*sqrt(2.0)*r1*(scale - sqrt(2.0)*r1);
+				while (areaYet < targetArea)
+				{
+					if (index == diskList.size()) return false;
+					areaYet += diskList[index]*diskList[index];
+					newDiskList.push_back(diskList[index]);
+					index++;
+				}
+				vector<double> remainingDisks;
+				while (index < diskList.size())
+				{
+					remainingDisks.push_back(diskList[index]);
+					index ++;
+				}
+
+				//create the rectangle
+				double width = areaYet/( (scale - sqrt(2.0)*r1) * (11.0/12.0) );
+				double height = scale - sqrt(2.0)*r1;
+				Point p1(scale - width, 0.0), p2(scale - width, height),
+					p3(scale, height), p4(scale, 0.0);
+				vector<pair<double, Point> > answer1, answer2;
+				bool possible = good_rectangle_cover(newDiskList, p1, p2, p3, p4, answer1);
+
+				//create the triangle and recurse
+				Point newOrigin(0.0, 0.0);
+				double newScale = scale - width;
+				possible = possible && right(remainingDisks, answer2, newOrigin, newScale, 0);
+
+				if (!possible) return false;
+
+				//place the first disk and copy the results of the recursive calls
+				output.resize(0);
+				output.push_back(make_pair(r1, Point((scale - r1)/sqrt(2.0), (scale - r1)/sqrt(2.0) )));
+				for (int i = 0 ; i < answer1.size() ; i ++)
+				{
+					output.push_back(answer1[i]);
+				}
+				for (int i = 0 ; i < answer2.size() ; i ++)
+				{
+					output.push_back(answer2[i]);
+				}
+			}
+		}
 	}
 
 	//adjust for non-standard configuration

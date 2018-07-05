@@ -30,3 +30,9 @@ bool checkEq(vector<pair<double, Point> > & solution, Point point0, double scale
 bool right(vector<double> & diskList, vector<pair<double, Point> > & output, Point point0, double scale, int configuration);
 
 bool bad_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Point upright,Point lowright,vector<pair<double,Point> > & ans);
+
+bool checkRectangle(vector<pair<double, Point> > & solution, Point bl, Point tl, Point tr, Point br);
+
+bool checkEq(vector<pair<double, Point> > & solution, Point point0, double scale);
+
+bool checkRight(vector<pair<double, Point> > & solution, Point point0, double scale);

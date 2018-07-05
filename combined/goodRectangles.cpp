@@ -330,6 +330,7 @@ bool bad_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Point
 		if(r_1 <= g_0) return bad_rectangle_cover_bounded_radii(radii,lowleft,upleft,upright,lowright, ans);
 		ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(lowleft.y+upleft.y))));
 		double rem = y - 2*sqrt(r_1*r_1-0.25*x*x);
+		if(rem <= 0) return true;
 		radii.erase(radii.begin());
 		if(rem >= 3.0*x) return bad_rectangle_cover(radii,Point(lowright.x-rem,lowright.y),Point(upright.x-rem,upright.y),upright,lowright,ans);
 		else if(rem >= x/3.0) return good_rectangle_cover(radii,Point(lowright.x-rem,lowright.y),Point(upright.x-rem,upright.y),upright,lowright,ans);
@@ -340,6 +341,7 @@ bool bad_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Point
 		if(r_1 <= g_0) return bad_rectangle_cover_bounded_radii(radii,lowleft,upleft,upright,lowright, ans);
 		ans.pb(mp(r_1,Point(0.5*(lowright.x+lowleft.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
 		double rem = x - 2*sqrt(r_1*r_1-0.25*y*y);
+		if(rem <= 0 ) return true;
 		radii.erase(radii.begin());
 		if(rem >= 3.0*y) return bad_rectangle_cover(radii,Point(upleft.x,upleft.y-rem),upleft,upright,Point(upright.x,upright.y-rem),ans);
 		else if(rem >= x/3.0) return good_rectangle_cover(radii,Point(upleft.x,upleft.y-rem),upleft,upright,Point(upright.x,upright.y-rem),ans);
