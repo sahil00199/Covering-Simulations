@@ -174,3 +174,8 @@ bool bad_rectangle_cover_bounded_radii(vector<double> & diskList, Point bl, Poin
 
 	return true;
 }
+
+
+
+
+

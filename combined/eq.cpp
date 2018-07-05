@@ -154,10 +154,10 @@ bool eq(vector<double> & diskList, vector<pair<double, Point> > & output, Point 
 
 			if (!possible) return false;
 
-			//now place the firast 2 disks and then copy the output of the recursive call
+			//now place the first 2 disks and then copy the output of the recursive call
 			output.resize(0);
 			output.push_back(make_pair(r1, Point(scale/2.0, sqrt(3.0)*scale/2.0 - r1)));
-			output.push_back(make_pair(r2, Point(0.0, r1)));
+			output.push_back(make_pair(r2, Point(r2, 0.0)));
 			for (int i = 0 ; i < answer.size() ; i ++)
 			{
 				output.push_back(answer[i]);
@@ -168,7 +168,7 @@ bool eq(vector<double> & diskList, vector<pair<double, Point> > & output, Point 
 	else if (r1/scale >= 11.0/16.0 - sqrt(249.0/256.0 - 11.0*sqrt(3.0)/24.0))
 	{
 		double width = scale;
-		double height = sqrt(3.0)*scale/2.0 - 2*r1;
+		double height = (sqrt(3.0)/2.0)*(scale - sqrt(3.0)*r1);
 
 		//recursion 
 		vector<pair<double, Point> >answer;

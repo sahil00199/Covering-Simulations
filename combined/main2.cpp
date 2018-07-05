@@ -6,19 +6,14 @@ using namespace std;
 
 int main()
 {
-	double lam = 1.6
-	vector<double> diskList;
-	for (int i = 0 ; i < 40 ; i ++)
-	{
-		diskList.push_back(0.2);
-	}
-	for (int i = 0 ; i < 20 ; i ++)
-	{
-		diskList.push_back(0.15);
-	}
+	vector<double> diskList(4);
+	diskList[0] = 0.496634;
+	diskList[1] = 0.483233;
+	diskList[2] = 0.138902;
+	diskList[3] = 0.0254341;
 	vector<pair<double, Point> > answer;
-	Point a(0,0), b(0,1), c(lam, 1), d(lam, 0);
-	bool possible = bad_rectangle_cover_bounded_radii(diskList, a, b, c, d, answer);
+	Point a(0,0);
+	bool possible = eq(diskList, answer, a, 1.0);
 	if (!possible)
 	{
 		cout<<"Not possible\n";

@@ -316,3 +316,33 @@ bool wrapper_rc(vector<double> & radii,vector<pair<double,Point> > & ans,double 
 	return good_rectangle_cover(radii,Point(0,0),Point(0,lambda),Point(1,lambda),Point(1,0),ans);
 }
 
+
+bool bad_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Point upright,Point lowright,vector<pair<double,Point> > & ans){
+	//// basecases
+	if(radii.empty()) return false;
+	double y = lowright.x-lowleft.x,x=upright.y-lowright.y,r_1=radii[0];
+	if(radii.size()==1) {
+		if(r_1 >= 0.5*sqrt(x*x+y*y)) {ans.pb(mp(r_1,Point(0.5*(lowleft.x+lowright.x),0.5*(upleft.y+lowleft.y)))); return true;}
+		else return false;	
+	}
+	if(x <= y){
+		double g_0 = x*(sqrt(77.0))/6.0;
+		if(r_1 <= g_0) return bad_rectangle_cover_bounded_radii(radii,lowleft,upleft,upright,lowright, ans);
+		ans.pb(mp(r_1,Point(lowleft.x+sqrt(r_1*r_1-0.25*x*x),0.5*(lowleft.y+upleft.y))));
+		double rem = y - 2*sqrt(r_1*r_1-0.25*x*x);
+		radii.erase(radii.begin());
+		if(rem >= 3.0*x) return bad_rectangle_cover(radii,Point(lowright.x-rem,lowright.y),Point(upright.x-rem,upright.y),upright,lowright,ans);
+		else if(rem >= x/3.0) return good_rectangle_cover(radii,Point(lowright.x-rem,lowright.y),Point(upright.x-rem,upright.y),upright,lowright,ans);
+		else return bad_rectangle_cover(radii,Point(lowright.x-rem,lowright.y),Point(upright.x-rem,upright.y),upright,lowright,ans);
+	}
+	else {
+		double g_0 = y*(sqrt(77))/6.0;
+		if(r_1 <= g_0) return bad_rectangle_cover_bounded_radii(radii,lowleft,upleft,upright,lowright, ans);
+		ans.pb(mp(r_1,Point(0.5*(lowright.x+lowleft.x),lowleft.y+sqrt(r_1*r_1-0.25*y*y))));
+		double rem = x - 2*sqrt(r_1*r_1-0.25*y*y);
+		radii.erase(radii.begin());
+		if(rem >= 3.0*y) return bad_rectangle_cover(radii,Point(upleft.x,upleft.y-rem),upleft,upright,Point(upright.x,upright.y-rem),ans);
+		else if(rem >= x/3.0) return good_rectangle_cover(radii,Point(upleft.x,upleft.y-rem),upleft,upright,Point(upright.x,upright.y-rem),ans);
+		else return bad_rectangle_cover(radii,Point(upleft.x,upleft.y-rem),upleft,upright,Point(upright.x,upright.y-rem),ans);
+	}
+} 
