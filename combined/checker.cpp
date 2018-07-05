@@ -6,7 +6,7 @@
 using namespace std;
 
 double epsilon = 1e-9;
-int numIter = 2;
+int numIter = 1000;
 
 bool checkRectangle(vector<pair<double, Point> > & solution, Point bl, Point tl, Point tr, Point br)
 {

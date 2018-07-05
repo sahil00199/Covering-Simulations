@@ -31,7 +31,7 @@ int main()
 	double delta = 0.2;
 
 	default_random_engine generator;
-	uniform_real_distribution<double> distribution(0.0,1.0);
+	uniform_real_distribution<double> distribution(0.0,0.7);
 
 	for (int ii = 0 ; ii < 5000 ; ii ++)
 	{
