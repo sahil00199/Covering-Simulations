@@ -175,7 +175,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 				vector<double> a1,a2;
 				vector<pair<double,Point> > ans1,ans2;
 				double ratio = greedySplit(radii,a1,a2);
-				if(ratio > 2) cerr<<"ratio shouldnnt be bad than 2"<<endl;
+				//if(ratio > 2) cerr<<"ratio shouldnnt be bad than 2"<<endl;
 			    bool f1 = good_rectangle_cover(a1,Point(lowright.x-x/6.0,lowright.y + 0.75*x - (ratio*0.75*x/(ratio+1.0))),Point(lowright.x-x/6.0,lowright.y + 0.75*x),Point(lowright.x,lowleft.y+0.75*x),Point(lowright.x,lowright.y + 0.75*x - (ratio*0.75*x/(ratio+1.0))),ans1);
 				bool f2 = good_rectangle_cover(a2,Point(lowright.x-x/6.0,lowright.y),Point(lowright.x-x/6.0,lowright.y+(0.75*x/(ratio+1.0))),Point(lowright.x,lowright.y+(0.75*x/(ratio+1.0))),lowright,ans2);
 				for(auto itr : ans1 ) ans.pb(itr);
@@ -211,7 +211,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			vector<double> a1,a2;
 			vector<pair<double,Point> > ans1,ans2;
 			double ratio = greedySplit(radii,a1,a2);
-			if(ratio >= 3) cerr<<"Ratio shouldnt be bad than 3"<<endl;
+			//if(ratio >= 3) cerr<<"Ratio shouldnt be bad than 3"<<endl;
 			bool f1 = good_rectangle_cover(a2,lowleft,upleft,Point(upleft.x+(y)/(ratio+1.0),upleft.y),Point(lowleft.x+(y)/(ratio+1.0),lowleft.y),ans1);
 			bool f2 = good_rectangle_cover(a1,Point(lowleft.x+(y)/(ratio+1.0),lowleft.y),Point(upleft.x+(y)/(ratio+1.0),upleft.y),upright,lowright,ans2);
 			for(auto itr : ans1 ) ans.pb(itr);
@@ -263,7 +263,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 				vector<double> a1,a2;
 				vector<pair<double,Point> > ans1,ans2;
 				double ratio = greedySplit(radii,a1,a2);
-				if(ratio >= 2) cerr<<"Ratio shouldnt be bad than 2"<<endl;
+			//	if(ratio >= 2) cerr<<"Ratio shouldnt be bad than 2"<<endl;
 				bool f1 = good_rectangle_cover(a1,Point(upleft.x+y*0.25,upleft.y-y/6.0),Point(upleft.x+y*0.25,upleft.y),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y-y/6.0),ans1);
 				bool f2 = good_rectangle_cover(a1,Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y-y/6.0),Point(upleft.x+ratio*(y*0.75/(1.0+ratio)),upleft.y),upright,Point(upright.x,upright.y-y/6.0),ans2);
 				for(auto itr : ans1 ) ans.pb(itr);
@@ -299,7 +299,7 @@ bool good_rectangle_cover(vector<double> & radii,Point lowleft,Point upleft,Poin
 			vector<double> a1,a2;
 			vector<pair<double,Point> > ans1,ans2;
 			double ratio = greedySplit(radii,a1,a2);
-			if(ratio >= 3) cerr<<"Ratio shouldnt be bad than 3"<<endl;
+			//if(ratio >= 3) cerr<<"Ratio shouldnt be bad than 3"<<endl;
 			bool f1 = good_rectangle_cover(a1,lowleft,Point(lowleft.x,lowleft.y+ratio*x*(1.0/(ratio+1))),Point(lowright.x,lowright.y+ratio*x*(1.0/(ratio+1))),lowright,ans1);
 			bool f2 = good_rectangle_cover(a2,Point(lowleft.x,lowleft.y+ratio*x*(1.0/(ratio+1))),upleft,upright,Point(lowright.x,lowright.y+ratio*x*(1.0/(ratio+1))),ans2);
 			for(auto itr : ans1 ) ans.pb(itr);
